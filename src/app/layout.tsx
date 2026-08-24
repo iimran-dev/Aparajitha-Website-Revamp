@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
   title: "Aparajitha | India's Digital Compliance Authority Platform",
@@ -45,14 +53,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
-      <body className="antialiased bg-background text-foreground font-sans">
+    <html lang="en" className={jakarta.variable} suppressHydrationWarning>
+      <body className={`${jakarta.className} antialiased bg-background text-foreground font-sans`}>
         {children}
         <Toaster />
       </body>
     </html>
   );
 }
+

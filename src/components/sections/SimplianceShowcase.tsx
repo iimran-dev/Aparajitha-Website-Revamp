@@ -1,354 +1,380 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  CalendarDays,
-  Users,
-  ClipboardCheck,
-  Factory,
-  Calculator,
-  ShieldAlert,
-  Bell,
-  LayoutDashboard,
-  Search,
-  ChevronRight,
-  CheckCircle2,
-  AlertTriangle,
-  FileText,
+import { 
+  CheckCircle2, 
+  ArrowRight, 
+  Play, 
+  Search, 
+  Bell, 
+  ChevronDown, 
+  LayoutDashboard, 
+  ShieldAlert, 
+  Calendar, 
+  Users, 
+  FileText, 
+  ClipboardCheck, 
+  Settings, 
+  Folder, 
+  Briefcase 
 } from 'lucide-react';
-import { SectionHeading } from '@/components/shared/section-heading';
-import { ScrollReveal } from '@/components/shared/scroll-reveal';
+import { platformFeatures, dashboardStats } from '@/data';
 
 /* ------------------------------------------------------------------ */
-/*  Sidebar nav items for the fake dashboard                          */
+/*  Dashboard sidebar items                                           */
 /* ------------------------------------------------------------------ */
-const sidebarNav = [
-  { label: 'Dashboard', Icon: LayoutDashboard, active: true },
-  { label: 'Compliance', Icon: ShieldAlert, active: false },
-  { label: 'Calendar', Icon: CalendarDays, active: false },
-  { label: 'Vendors', Icon: Users, active: false },
-  { label: 'Audit', Icon: ClipboardCheck, active: false },
-  { label: 'Reports', Icon: FileText, active: false },
+const sidebarItems = [
+  { label: 'Dashboard', icon: LayoutDashboard, active: true },
+  { label: 'Compliance', icon: ShieldAlert, active: false },
+  { label: 'Calendar', icon: Calendar, active: false },
+  { label: 'Vendors', icon: Users, active: false },
+  { label: 'Contracts', icon: Briefcase, active: false },
+  { label: 'Workforce', icon: Users, active: false },
+  { label: 'Documents', icon: Folder, active: false },
+  { label: 'Audits', icon: ClipboardCheck, active: false },
+  { label: 'Reports', icon: FileText, active: false },
+  { label: 'Alerts', icon: Bell, active: false },
+  { label: 'Settings', icon: Settings, active: false },
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Metric cards in the dashboard                                     */
+/*  Calendar Day Grid Mockup                                           */
 /* ------------------------------------------------------------------ */
-const metrics = [
-  { label: 'Overdue', value: '42', color: 'bg-red-500/20 text-red-400' },
-  { label: 'Due This Week', value: '156', color: 'bg-amber-500/20 text-amber-400' },
-  { label: 'Active Notices', value: '1,248', color: 'bg-blue-500/20 text-blue-400' },
-  { label: 'Documents', value: '3,562', color: 'bg-emerald-500/20 text-emerald-400' },
+const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const calendarGridDays = [
+  { day: 1, status: null },
+  { day: 2, status: null },
+  { day: 3, status: null },
+  { day: 4, status: null },
+  { day: 5, status: 'warning' },
+  { day: 6, status: null },
+  { day: 7, status: null },
+  { day: 8, status: null },
+  { day: 9, status: 'urgent' },
+  { day: 10, status: null },
+  { day: 11, status: null },
+  { day: 12, status: 'success' },
+  { day: 13, status: 'urgent' },
+  { day: 14, status: null },
+  { day: 15, status: 'tooltip' }, // Tooltip day
+  { day: 16, status: null },
+  { day: 17, status: null },
+  { day: 18, status: 'warning' },
+  { day: 19, status: null },
+  { day: 20, status: null },
+  { day: 21, status: null },
+  { day: 22, status: null },
+  { day: 23, status: null },
+  { day: 24, status: 'warning' },
+  { day: 25, status: 'urgent' },
+  { day: 26, status: null },
+  { day: 27, status: null },
+  { day: 28, status: null },
 ];
 
-/* ------------------------------------------------------------------ */
-/*  Recent activity items                                              */
-/* ------------------------------------------------------------------ */
-const activities = [
-  { label: 'PF return filed — Mumbai HQ', time: '2 min ago', status: 'success' },
-  { label: 'Factory license renewal due in 5 days', time: '1 hr ago', status: 'warning' },
-  { label: 'ESI half-yearly return submitted', time: '3 hrs ago', status: 'success' },
-  { label: 'Labour inspection scheduled — Pune', time: '5 hrs ago', status: 'warning' },
-];
-
-/* ------------------------------------------------------------------ */
-/*  Calendar grid (simple 5×7)                                        */
-/* ------------------------------------------------------------------ */
-const calendarDays = [
-  [1, 2, 3, 4, 5, 6, 7],
-  [8, 9, 10, 11, 12, 13, 14],
-  [15, 16, 17, 18, 19, 20, 21],
-  [22, 23, 24, 25, 26, 27, 28],
-  [29, 30, 31, null, null, null, null],
-];
-const dayLabels = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const highlightedDays = [5, 12, 15, 20, 28]; // compliance deadlines
-
-/* ------------------------------------------------------------------ */
-/*  Feature cards below the dashboard                                 */
-/* ------------------------------------------------------------------ */
-const features = [
-  {
-    Icon: CalendarDays,
-    title: 'Compliance Calendar',
-    description: 'Never miss a filing deadline with intelligent calendar management.',
-  },
-  {
-    Icon: Users,
-    title: 'Vendor Management',
-    description: 'Track and manage vendor compliance across your supply chain.',
-  },
-  {
-    Icon: ClipboardCheck,
-    title: 'Audit Management',
-    description: 'Streamline audit preparation and corrective action tracking.',
-  },
-  {
-    Icon: Factory,
-    title: 'Factory Compliance',
-    description: 'Monitor factory-specific compliance requirements in real-time.',
-  },
-  {
-    Icon: Calculator,
-    title: 'Payroll Compliance',
-    description: 'Automate complex payroll calculations and statutory filings.',
-  },
-  {
-    Icon: ShieldAlert,
-    title: 'Risk Monitoring',
-    description: 'Identify and mitigate compliance risks before they become penalties.',
-  },
-  {
-    Icon: Bell,
-    title: 'Alerts Center',
-    description: 'Stay informed with intelligent compliance alerts and notifications.',
-  },
-];
-
-/* ================================================================== */
-/*  Component                                                         */
-/* ================================================================== */
 export function SimplianceShowcase() {
   return (
-    <section className="bg-ap-lavender/30 py-20 lg:py-28">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ---------- Heading ---------- */}
-        <SectionHeading
-          eyebrow="The Technology Engine"
-          title="Simpliance — Your Compliance Command Center"
-          description="One platform to manage, monitor, and master every compliance obligation across your enterprise."
-        />
+    <section id="platform" className="bg-gradient-to-br from-[#F5F2FF] via-[#FAF8FF] to-[#F3EFFF] py-16 sm:py-20 lg:py-28 overflow-hidden">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        
+        {/* Main Split Container */}
+        <div className="grid items-center gap-12 lg:grid-cols-12">
 
-        {/* ---------- Dashboard Mockup ---------- */}
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto mt-16 max-w-5xl"
-        >
-          <div className="overflow-hidden rounded-2xl bg-ap-indigo/95 p-3 sm:p-4 lg:p-6 shadow-2xl">
-            <div className="flex h-[420px] sm:h-[480px] lg:h-[520px] rounded-xl overflow-hidden bg-ap-indigo">
+          {/* Left Column: Platform Overview & Features */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 space-y-6"
+          >
+            {/* Top Subtitle */}
+            <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#7C3AED]">
+              Powered by Technology. Driven by Expertise.
+            </p>
 
-              {/* ---- Sidebar ---- */}
-              <div className="hidden sm:flex w-16 lg:w-20 flex-shrink-0 flex-col items-center gap-1 bg-[#160e30] py-4">
-                {/* Logo mark */}
-                <div className="mb-4 flex h-8 w-8 lg:h-9 lg:w-9 items-center justify-center rounded-lg bg-ap-violet font-bold text-white text-xs">
-                  S
-                </div>
-                {sidebarNav.map((item) => {
-                  const { Icon, active } = item;
-                  return (
-                    <button
-                      key={item.label}
-                      title={item.label}
-                      className={`flex h-10 w-10 lg:h-11 lg:w-11 items-center justify-center rounded-lg transition-colors ${
-                        active
-                          ? 'bg-ap-violet/20 text-ap-violet'
-                          : 'text-white/40 hover:text-white/70'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
-                    </button>
-                  );
-                })}
-              </div>
+            {/* Title */}
+            <h2 className="text-2xl sm:text-4xl lg:text-[2.6rem] font-black leading-[1.18] tracking-tight text-slate-900">
+              Simpliance — Your All-in-One Compliance Management Platform
+            </h2>
 
-              {/* ---- Main Area ---- */}
-              <div className="flex flex-1 flex-col overflow-hidden">
+            {/* Description */}
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+              Experience the power of automation, real-time alerts and centralized compliance management.
+            </p>
 
-                {/* Top Bar */}
-                <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
-                  <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1.5">
-                    <Search className="h-3.5 w-3.5 text-white/50" />
-                    <span className="text-xs text-white/40">Search compliance…</span>
+            {/* Checklist items */}
+            <ul className="space-y-3.5 pt-2">
+              {platformFeatures.map((feature, i) => (
+                <li key={i} className="flex items-center gap-3">
+                  <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#7C3AED] text-white shadow-sm">
+                    <CheckCircle2 className="size-3.5 stroke-[3]" />
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <Bell className="h-4 w-4 text-white/60" />
-                      <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
-                        3
-                      </span>
-                    </div>
-                    <div className="h-7 w-7 rounded-full bg-ap-violet/40 flex items-center justify-center text-[10px] font-semibold text-white">
-                      AP
-                    </div>
-                  </div>
-                </div>
+                  <span className="text-sm sm:text-base font-semibold text-slate-800">
+                    {feature}
+                  </span>
+                </li>
+              ))}
+            </ul>
 
-                {/* Dashboard Content */}
-                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
+            {/* CTA Buttons */}
+            <div className="pt-4 flex flex-wrap items-center gap-4">
+              {/* Primary CTA */}
+              <a
+                href="#demo"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-purple-900/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>Explore Platform</span>
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+              </a>
 
-                  {/* Metric Cards Row */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-                    {metrics.map((m) => (
-                      <div
-                        key={m.label}
-                        className={`rounded-xl ${m.color} p-3 sm:p-4`}
-                      >
-                        <p className="text-[10px] sm:text-xs font-medium opacity-80">
-                          {m.label}
-                        </p>
-                        <p className="mt-1 text-lg sm:text-2xl font-bold">{m.value}</p>
-                      </div>
-                    ))}
-                  </div>
+              {/* Secondary CTA */}
+              <a
+                href="#tour"
+                className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-purple-300 bg-white hover:bg-purple-50 px-6 py-3 text-sm font-semibold text-[#7C3AED] shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>Watch Platform Tour</span>
+                <span className="flex size-6 items-center justify-center rounded-full border border-purple-300 text-[#7C3AED]">
+                  <Play className="size-3 fill-current translate-x-[1px]" />
+                </span>
+              </a>
+            </div>
+          </motion.div>
 
-                  {/* Calendar + Donut Row */}
-                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4">
-
-                    {/* Calendar Preview */}
-                    <div className="lg:col-span-3 rounded-xl bg-white/5 border border-white/10 p-3 sm:p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs sm:text-sm font-semibold text-white/90">
-                          Compliance Calendar
-                        </span>
-                        <span className="text-[10px] sm:text-xs text-white/50">
-                          January 2025
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-7 gap-1">
-                        {dayLabels.map((d) => (
-                          <div
-                            key={d}
-                            className="text-center text-[9px] sm:text-[10px] font-medium text-white/40 pb-1"
-                          >
-                            {d}
-                          </div>
-                        ))}
-                        {calendarDays.flat().map((day, i) => (
-                          <div
-                            key={i}
-                            className={`flex h-6 sm:h-7 items-center justify-center rounded text-[10px] sm:text-xs ${
-                              day
-                                ? highlightedDays.includes(day)
-                                  ? 'bg-ap-violet text-white font-semibold'
-                                  : 'text-white/60'
-                                : ''
-                            }`}
-                          >
-                            {day}
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mt-2 flex items-center gap-3 text-[9px] sm:text-[10px] text-white/50">
-                        <span className="flex items-center gap-1">
-                          <span className="h-2 w-2 rounded-sm bg-ap-violet" /> Filing Deadline
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Donut Chart */}
-                    <div className="lg:col-span-2 rounded-xl bg-white/5 border border-white/10 p-3 sm:p-4 flex flex-col items-center justify-center">
-                      <span className="text-xs sm:text-sm font-semibold text-white/90 mb-3">
-                        Compliance Health
-                      </span>
-                      <div
-                        className="relative h-24 w-24 sm:h-28 sm:w-28"
-                        style={{
-                          background:
-                            'conic-gradient(#7C3AED 0deg 270deg, rgba(255,255,255,0.1) 270deg 360deg)',
-                          borderRadius: '50%',
-                        }}
-                      >
-                        <div className="absolute inset-2 rounded-full bg-[#1a1035] flex items-center justify-center">
-                          <span className="text-lg sm:text-xl font-bold text-white">
-                            75<span className="text-xs text-white/60">%</span>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-3 flex items-center gap-4 text-[9px] sm:text-[10px] text-white/50">
-                        <span className="flex items-center gap-1">
-                          <span className="h-2 w-2 rounded-sm bg-ap-violet" /> Compliant
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="h-2 w-2 rounded-sm bg-white/10" /> Pending
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Recent Activity */}
-                  <div className="rounded-xl bg-white/5 border border-white/10 p-3 sm:p-4">
-                    <span className="text-xs sm:text-sm font-semibold text-white/90">
-                      Recent Activity
+          {/* Right Column: Platform Dashboard Mockup */}
+          <motion.div
+            initial={{ opacity: 0, x: 30, scale: 0.98 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="lg:col-span-7 relative"
+          >
+            {/* Main Outer Mockup Card */}
+            <div className="overflow-hidden rounded-2xl border border-purple-100 bg-white shadow-2xl shadow-purple-900/10">
+              
+              <div className="flex min-h-[500px] sm:min-h-[540px]">
+                
+                {/* Dark Left Sidebar */}
+                <div className="hidden sm:flex w-44 flex-shrink-0 flex-col bg-[#120B2E] p-3 text-white">
+                  {/* App Brand Logo */}
+                  <div className="mb-5 px-3 pt-2">
+                    <span className="text-lg font-black tracking-tight text-white">
+                      Simpliance
                     </span>
-                    <div className="mt-2 space-y-2">
-                      {activities.map((a, i) => (
+                  </div>
+
+                  {/* Nav List */}
+                  <nav className="space-y-1 flex-1">
+                    {sidebarItems.map((item) => {
+                      const IconComp = item.icon;
+                      return (
                         <div
-                          key={i}
-                          className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2"
+                          key={item.label}
+                          className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors cursor-pointer ${
+                            item.active
+                              ? 'bg-[#7C3AED] text-white shadow-md'
+                              : 'text-purple-200/60 hover:bg-white/5 hover:text-white'
+                          }`}
                         >
-                          {a.status === 'success' ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-400" />
-                          ) : (
-                            <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-amber-400" />
-                          )}
-                          <span className="flex-1 text-[11px] sm:text-xs text-white/70 truncate">
-                            {a.label}
-                          </span>
-                          <span className="flex-shrink-0 text-[10px] text-white/40">
-                            {a.time}
-                          </span>
+                          <IconComp className="size-4 shrink-0" />
+                          <span>{item.label}</span>
+                        </div>
+                      );
+                    })}
+                  </nav>
+                </div>
+
+                {/* Main White Content Workspace */}
+                <div className="flex flex-1 flex-col bg-slate-50/60 overflow-hidden">
+                  
+                  {/* Top Dashboard Header Bar */}
+                  <div className="flex items-center justify-between border-b border-slate-100 bg-white px-4 sm:px-6 py-3">
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900">Dashboard</h3>
+                      <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                        <span>Overview</span>
+                        <span>›</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="hidden sm:flex items-center gap-1 text-slate-400 hover:text-slate-600 cursor-pointer">
+                        <Search className="size-4" />
+                      </div>
+                      <div className="relative cursor-pointer">
+                        <Bell className="size-4 text-slate-500" />
+                        <span className="absolute -top-1 -right-1 size-2 rounded-full bg-red-500" />
+                      </div>
+                      
+                      {/* User Profile */}
+                      <div className="flex items-center gap-2 pl-2 border-l border-slate-100">
+                        <div className="size-7 rounded-full bg-purple-100 border border-purple-200 flex items-center justify-center text-xs font-bold text-purple-900">
+                          A
+                        </div>
+                        <span className="hidden sm:inline text-xs font-bold text-slate-700">
+                          Aparajitha Admin
+                        </span>
+                        <ChevronDown className="size-3 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dashboard Workspace Body */}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    
+                    {/* Top 4 Metric Cards */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                      {dashboardStats.map((stat, idx) => (
+                        <div
+                          key={idx}
+                          className={`rounded-xl border border-slate-100 bg-white p-3 shadow-sm border-l-4 ${stat.borderColor}`}
+                        >
+                          <p className="text-[10px] font-medium text-slate-400 truncate">
+                            {stat.title}
+                          </p>
+                          <p className={`mt-0.5 text-xl font-extrabold ${stat.valueColor}`}>
+                            {stat.value}
+                          </p>
+                          <p className="mt-0.5 text-[9px] text-slate-400 truncate">
+                            {stat.subtext}
+                          </p>
                         </div>
                       ))}
                     </div>
+
+                    {/* Middle Section: Calendar & Health Donut */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+                      
+                      {/* Compliance Calendar Widget */}
+                      <div className="lg:col-span-7 rounded-xl border border-slate-100 bg-white p-3.5 shadow-sm relative">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-bold text-slate-900">
+                            Compliance Calendar
+                          </span>
+                          <span className="text-[10px] font-semibold text-slate-400">
+                            May 2025 ‹ ›
+                          </span>
+                        </div>
+
+                        {/* Calendar Header Days */}
+                        <div className="grid grid-cols-7 gap-1 text-center mb-1">
+                          {dayNames.map((d) => (
+                            <span key={d} className="text-[9px] font-bold text-slate-400">
+                              {d}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Calendar Grid */}
+                        <div className="grid grid-cols-7 gap-1 text-center relative">
+                          {calendarGridDays.map((item, idx) => (
+                            <div
+                              key={idx}
+                              className={`h-6 sm:h-7 rounded flex items-center justify-center text-[10px] font-medium relative ${
+                                item.status === 'tooltip'
+                                  ? 'bg-purple-600 text-white font-bold'
+                                  : 'text-slate-600 hover:bg-slate-50'
+                              }`}
+                            >
+                              {item.day}
+                              {item.status === 'urgent' && (
+                                <span className="absolute bottom-0.5 size-1 rounded-full bg-red-500" />
+                              )}
+                              {item.status === 'warning' && (
+                                <span className="absolute bottom-0.5 size-1 rounded-full bg-amber-500" />
+                              )}
+                              {item.status === 'success' && (
+                                <span className="absolute bottom-0.5 size-1 rounded-full bg-emerald-500" />
+                              )}
+                            </div>
+                          ))}
+
+                          {/* Floating Calendar Tooltip Card matching image */}
+                          <div className="absolute left-1/3 top-1/2 z-20 rounded-lg bg-[#110A29] p-2 text-white shadow-xl text-[10px] text-left pointer-events-none min-w-[130px]">
+                            <p className="font-bold text-purple-200">ESI Return</p>
+                            <p className="text-[9px] text-purple-300/80">Due on 15 May 2025</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Compliance Status Donut Widget */}
+                      <div className="lg:col-span-5 rounded-xl border border-slate-100 bg-white p-3.5 shadow-sm flex flex-col justify-between">
+                        <span className="text-xs font-bold text-slate-900 mb-2">
+                          Compliance Status
+                        </span>
+                        
+                        <div className="flex items-center justify-center py-2">
+                          {/* Circular Progress Ring */}
+                          <div 
+                            className="relative size-24 rounded-full flex items-center justify-center"
+                            style={{
+                              background: 'conic-gradient(#10B981 0deg 270deg, #3B82F6 270deg 320deg, #EF4444 320deg 360deg)',
+                            }}
+                          >
+                            <div className="size-16 rounded-full bg-white flex flex-col items-center justify-center shadow-inner">
+                              <span className="text-base font-black text-slate-900">75%</span>
+                              <span className="text-[8px] font-bold text-slate-400">Compliant</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Legend */}
+                        <div className="grid grid-cols-3 gap-1 text-[9px] text-slate-500 pt-1 border-t border-slate-100">
+                          <span className="flex items-center gap-1">
+                            <span className="size-1.5 rounded-full bg-emerald-500" /> Compliant
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="size-1.5 rounded-full bg-blue-500" /> Progress
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="size-1.5 rounded-full bg-red-500" /> Overdue
+                          </span>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Bottom Location Compliance Bar Widget */}
+                    <div className="rounded-xl border border-slate-100 bg-white p-3.5 shadow-sm">
+                      <span className="text-xs font-bold text-slate-900 mb-2 block">
+                        Top Locations by Compliance
+                      </span>
+                      <div className="space-y-2 text-[10px]">
+                        <div>
+                          <div className="flex justify-between text-slate-600 font-semibold mb-1">
+                            <span>Chennai</span>
+                            <span>92%</span>
+                          </div>
+                          <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div className="h-full w-[92%] bg-blue-500 rounded-full" />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between text-slate-600 font-semibold mb-1">
+                            <span>Pune</span>
+                            <span>85%</span>
+                          </div>
+                          <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div className="h-full w-[85%] bg-purple-500 rounded-full" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
+
                 </div>
+
               </div>
+
             </div>
-          </div>
-
-          {/* ---- Floating Badges ---- */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="absolute -left-2 sm:-left-6 top-1/4 hidden md:flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg border border-gray-100"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ap-violet/10">
-              <Bell className="h-3 w-3 text-ap-violet" />
-            </span>
-            <span className="text-xs font-semibold text-ap-purple">Real-time Alerts</span>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="absolute -right-2 sm:-right-6 top-1/3 hidden md:flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg border border-gray-100"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ap-violet/10">
-              <CalendarDays className="h-3 w-3 text-ap-violet" />
-            </span>
-            <span className="text-xs font-semibold text-ap-purple">Auto Reminders</span>
-          </motion.div>
-        </motion.div>
-
-        {/* ---------- Feature Cards Grid ---------- */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-          {features.map((feature, index) => {
-            const { Icon } = feature;
-            return (
-              <ScrollReveal key={feature.title} delay={index * 0.08}>
-                <div className="group rounded-xl bg-white p-5 transition-shadow duration-300 hover:shadow-md">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-ap-lavender text-ap-violet">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-3 font-semibold text-ap-purple text-sm sm:text-base">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-muted-foreground">
-                    {feature.description}
-                  </p>
-                </div>
-              </ScrollReveal>
-            );
-          })}
         </div>
+
       </div>
     </section>
   );
 }
+

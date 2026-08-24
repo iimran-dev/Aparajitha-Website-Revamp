@@ -1,235 +1,244 @@
 'use client';
 
-import { ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { ArrowRight, Play } from 'lucide-react';
+import { heroStats } from '@/data';
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.12,
       delayChildren: 0.1,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
-
-const dashboardVariants = {
-  hidden: { opacity: 0, x: 40, scale: 0.96 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    scale: 1,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.3 },
-  },
-};
-
-function DashboardMockup() {
-  return (
-    <div className="relative">
-      {/* Main Dashboard Card */}
-      <div className="rounded-2xl bg-ap-indigo p-5 shadow-2xl shadow-ap-purple/30 ring-1 ring-white/10">
-        {/* Header Row */}
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-white/50">Compliance Dashboard</p>
-            <p className="mt-0.5 text-sm font-semibold text-white">Real-time Overview</p>
-          </div>
-          <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-2.5 py-1">
-            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] font-medium text-emerald-300">Live</span>
-          </div>
-        </div>
-
-        {/* Metric Cards Row */}
-        <div className="mb-4 grid grid-cols-3 gap-2.5">
-          <div className="rounded-xl bg-white/[0.07] p-3 ring-1 ring-white/[0.06]">
-            <p className="text-[10px] font-medium text-white/45">Compliance Score</p>
-            <p className="mt-1 text-xl font-bold text-white">98.4%</p>
-            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-[98.4%] rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500" />
-            </div>
-          </div>
-          <div className="rounded-xl bg-white/[0.07] p-3 ring-1 ring-white/[0.06]">
-            <p className="text-[10px] font-medium text-white/45">Pending Tasks</p>
-            <p className="mt-1 text-xl font-bold text-amber-300">12</p>
-            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-[12%] rounded-full bg-gradient-to-r from-amber-400 to-amber-500" />
-            </div>
-          </div>
-          <div className="rounded-xl bg-white/[0.07] p-3 ring-1 ring-white/[0.06]">
-            <p className="text-[10px] font-medium text-white/45">Resolved Today</p>
-            <p className="mt-1 text-xl font-bold text-emerald-300">147</p>
-            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-[73%] rounded-full bg-gradient-to-r from-violet-400 to-violet-500" />
-            </div>
-          </div>
-        </div>
-
-        {/* Compliance Categories */}
-        <div className="rounded-xl bg-white/[0.07] p-3.5 ring-1 ring-white/[0.06]">
-          <p className="mb-2.5 text-[11px] font-semibold text-white/60">Category Breakdown</p>
-          <div className="space-y-2.5">
-            <div className="flex items-center gap-2.5">
-              <span className="w-20 text-[10px] text-white/50">Labour Law</span>
-              <div className="flex-1 h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-[96%] rounded-full bg-emerald-400/80" />
-              </div>
-              <span className="text-[10px] font-semibold text-emerald-300 w-8 text-right">96%</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="w-20 text-[10px] text-white/50">Factory Act</span>
-              <div className="flex-1 h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-[89%] rounded-full bg-violet-400/80" />
-              </div>
-              <span className="text-[10px] font-semibold text-violet-300 w-8 text-right">89%</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="w-20 text-[10px] text-white/50">Safety &amp; Env</span>
-              <div className="flex-1 h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-[92%] rounded-full bg-sky-400/80" />
-              </div>
-              <span className="text-[10px] font-semibold text-sky-300 w-8 text-right">92%</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="w-20 text-[10px] text-white/50">Payroll</span>
-              <div className="flex-1 h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-[100%] rounded-full bg-emerald-400/80" />
-              </div>
-              <span className="text-[10px] font-semibold text-emerald-300 w-8 text-right">100%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Activity Timeline Row */}
-        <div className="mt-3 flex items-center gap-2.5">
-          <div className="flex-1 rounded-lg bg-white/[0.05] px-3 py-2 ring-1 ring-white/[0.05]">
-            <p className="text-[10px] text-white/40">Latest Filing</p>
-            <p className="text-[11px] font-medium text-white">PF ECR - Submitted</p>
-          </div>
-          <div className="flex-1 rounded-lg bg-white/[0.05] px-3 py-2 ring-1 ring-white/[0.05]">
-            <p className="text-[10px] text-white/40">Next Deadline</p>
-            <p className="text-[11px] font-medium text-amber-300">ESI Return - 3 days</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating Trust Badge: SOC 2 */}
-      <div className="glass-card absolute -top-3 -right-3 rounded-xl px-3.5 py-2.5 shadow-lg sm:-top-4 sm:-right-4">
-        <div className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20">
-            <svg className="size-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-xs font-bold text-white">SOC 2</p>
-            <p className="text-[9px] text-white/50">Certified</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating Trust Badge: ISO 27001 */}
-      <div className="glass-card absolute -bottom-3 -left-3 rounded-xl px-3.5 py-2.5 shadow-lg sm:-bottom-4 sm:-left-4">
-        <div className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-lg bg-violet-500/20">
-            <svg className="size-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.746 3.746 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.746 3.746 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-xs font-bold text-white">ISO 27001</p>
-            <p className="text-[9px] text-white/50">Compliant</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function Hero() {
+  const [imgSrc, setImgSrc] = useState('/images/hero-workers.jpg');
+
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-white to-ap-lavender/30 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-36 lg:pb-28">
-      {/* Background decoration */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-ap-violet/5 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-ap-purple/5 blur-3xl" />
+    <section className="relative overflow-hidden bg-gradient-to-r from-[#0B041C] via-[#150935] to-[#1E0B48] text-white pt-24 sm:pt-28 lg:pt-32 pb-24 sm:pb-32 lg:pb-40">
+      {/* Background ambient glow */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-40 size-[600px] rounded-full bg-purple-600/15 blur-[120px]" />
+        <div className="absolute top-1/3 -right-20 size-[500px] rounded-full bg-indigo-500/15 blur-[120px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* Left Column */}
+        <div className="grid items-center gap-8 lg:grid-cols-12">
+          
+          {/* Left Column: Headline, Description, Stats & CTAs */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
+            className="lg:col-span-7 z-10 pb-8 lg:pb-0"
           >
+            {/* Top Subtitle */}
             <motion.p
               variants={itemVariants}
-              className="text-sm font-semibold uppercase tracking-widest text-ap-gold"
+              className="text-base sm:text-lg font-medium text-white/90 tracking-wide"
             >
-              India&apos;s Most Trusted Compliance Partner
+              India&apos;s Most Trusted Partner for
             </motion.p>
 
+            {/* Main Title */}
             <motion.h1
               variants={itemVariants}
-              className="mt-4 text-3xl font-bold leading-tight text-ap-purple sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-6xl"
+              className="mt-3 text-3xl sm:text-5xl lg:text-6xl xl:text-[3.6rem] font-bold leading-[1.15] tracking-tight text-white"
             >
-              Enterprise Compliance,
+              Labour, Industrial &amp;
               <br />
-              Powered by Intelligence.
+              Employment{' '}
+              <span className="text-[#FFBA08] drop-shadow-md">
+                Compliance
+              </span>
             </motion.h1>
 
-            <motion.p
-              variants={itemVariants}
-              className="mt-5 max-w-xl text-lg text-muted-foreground leading-relaxed"
-            >
-              Technology-driven compliance management trusted by 58,000+
-              establishments across India. Simplify. Streamline. Stay Compliant.
-            </motion.p>
-
+            {/* Description */}
             <motion.div
               variants={itemVariants}
-              className="mt-8 flex flex-col gap-3.5 sm:flex-row sm:items-center"
+              className="mt-5 space-y-1 text-sm sm:text-base lg:text-lg text-purple-100/80 leading-relaxed font-normal max-w-2xl"
             >
-              <Button
-                size="lg"
-                className="bg-ap-purple text-white rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-ap-indigo transition-all duration-200 shadow-lg shadow-ap-purple/20 hover:shadow-xl hover:shadow-ap-purple/30"
-              >
-                Request a Demo
-                <ArrowRight className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-ap-purple/30 text-ap-purple rounded-xl px-8 py-3.5 text-sm font-semibold hover:bg-ap-lavender transition-all duration-200 bg-white"
-              >
-                Explore Simpliance
-              </Button>
+              <p>Tech-driven compliance solutions for a changing India.</p>
+              <p>Simplicity. Streamline. Stay Compliant.</p>
             </motion.div>
+
+            {/* Inline Stats Row */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-6 py-3.5 border-y border-white/10"
+            >
+              {heroStats.map((stat, i) => {
+                const IconComponent = stat.icon;
+                return (
+                  <div key={i} className="flex items-center gap-2.5">
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 ring-1 ring-purple-400/30">
+                      <IconComponent className="size-3.5 text-purple-300" />
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-1.5">
+                      <span className="text-xs sm:text-sm font-bold text-white whitespace-nowrap">
+                        {stat.value}
+                      </span>
+                      <span className="text-[11px] sm:text-xs text-purple-200/70 whitespace-nowrap font-normal">
+                        {stat.label}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-8 flex flex-wrap items-center gap-4"
+            >
+              {/* Primary CTA */}
+              <a
+                href="#contact"
+                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#7C3AED] hover:bg-[#6D28D9] px-7 py-3.5 text-sm font-semibold text-white transition-all duration-200 shadow-lg shadow-purple-900/40 hover:shadow-purple-700/50 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>Request a Demo</span>
+                <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+              </a>
+
+              {/* Secondary CTA */}
+              <a
+                href="#platform"
+                className="group inline-flex items-center justify-center gap-3 rounded-full border border-white/40 bg-white/5 hover:bg-white/15 px-6 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:border-white hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>Explore Simpliance Platform</span>
+                <span className="flex size-7 items-center justify-center rounded-full bg-white text-[#160B38] shadow-md transition-transform duration-200 group-hover:scale-110">
+                  <Play className="size-3.5 fill-current translate-x-[1px]" />
+                </span>
+              </a>
+            </motion.div>
+
+            {/* Sub-text */}
+            <motion.p
+              variants={itemVariants}
+              className="mt-4 text-xs sm:text-sm text-purple-200/60 font-normal"
+            >
+              Get a free compliance assessment for your business
+            </motion.p>
           </motion.div>
 
-          {/* Right Column - Dashboard Mockup */}
+          {/* Right Column: Worker Photography in Landscape Format */}
           <motion.div
-            variants={dashboardVariants}
-            initial="hidden"
-            animate="visible"
-            className="relative"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="lg:col-span-5 relative flex justify-center lg:justify-end"
           >
-            <DashboardMockup />
+            {/* Landscape Format Container */}
+            <div className="relative w-full aspect-[16/9] sm:aspect-[16/10] max-w-lg lg:max-w-none overflow-hidden rounded-2xl bg-[#0B041C]">
+              <Image
+                src={imgSrc}
+                alt="Aparajitha Industrial & Labour Compliance Team"
+                fill
+                priority
+                unoptimized
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                className="object-cover object-top filter brightness-[0.98]"
+                onError={() => {
+                  setImgSrc('https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80');
+                }}
+              />
+              {/* Soft ambient vignette */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#150935] via-transparent to-transparent opacity-50" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0B041C] via-transparent to-transparent opacity-40" />
+            </div>
           </motion.div>
+        </div>
+      </div>
+
+      {/* Swooping Curved White Bottom Wave Divider with Integrated 25 Years Badge */}
+      <div className="absolute inset-x-0 bottom-0 z-20 pointer-events-none">
+        {/* SVG Swooping Bottom Wave matching exact reference curve */}
+        <div className="relative w-full">
+          <svg
+            viewBox="0 0 1440 240"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-28 sm:h-36 lg:h-48 object-fill text-white block"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M 0,70 C 380,190 680,190 1020,40 C 1180,-30 1340,30 1440,90 L 1440,240 L 0,240 Z"
+              fill="currentColor"
+            />
+          </svg>
+
+          {/* 25th Anniversary Circular Badge overlaid on the right side of the swoop */}
+          <div className="pointer-events-auto absolute right-4 sm:right-12 lg:right-24 bottom-2 sm:bottom-6 z-30 flex items-center">
+            
+            {/* Left Pink & Gold Fireworks Rangoli Starburst */}
+            <div className="hidden sm:block size-20 sm:size-24 mr-2 sm:mr-4">
+              <svg viewBox="0 0 100 100" fill="none" className="w-full h-full animate-pulse">
+                <circle cx="50" cy="50" r="7" fill="#F59E0B" />
+                <path d="M50 12 V32 M50 68 V88 M15 50 H35 M68 50 H88 M23 23 L37 37 M63 63 L77 77 M77 23 L63 37 M37 63 L25 77" stroke="#EC4899" strokeWidth="4" strokeLinecap="round" />
+                <path d="M50 4 V10 M50 90 V96 M4 50 H10 M90 50 H96" stroke="#EC4899" strokeWidth="3" strokeLinecap="round" />
+                <circle cx="50" cy="4" r="2.5" fill="#EC4899" />
+                <circle cx="50" cy="96" r="2.5" fill="#EC4899" />
+                <circle cx="4" cy="50" r="2.5" fill="#EC4899" />
+                <circle cx="96" cy="50" r="2.5" fill="#EC4899" />
+              </svg>
+            </div>
+
+            {/* Main White Badge Container with Double Purple Arc Rings */}
+            <div className="relative">
+              {/* Outer Double Arc Purple Ring */}
+              <div className="absolute -inset-2.5 sm:-inset-4 rounded-full border-[4px] sm:border-[5px] border-transparent border-t-[#2D1B69] border-r-[#2D1B69] rotate-[-15deg] pointer-events-none" />
+              <div className="absolute -inset-1 sm:-inset-2 rounded-full border-[2px] sm:border-[3px] border-transparent border-t-white border-r-white rotate-[-15deg] pointer-events-none" />
+
+              {/* Top-Right Decorative Rangoli Seals / Stamps */}
+              <div className="absolute -right-2 -top-2 z-20 flex gap-1 pointer-events-none">
+                <div className="flex size-5 sm:size-7 items-center justify-center rounded-full bg-[#2D1B69] text-white text-[7px] sm:text-[8px] font-bold shadow-md ring-2 ring-white">
+                  <div className="size-3.5 sm:size-5 rounded-full border border-dashed border-purple-300 flex items-center justify-center">
+                    ★
+                  </div>
+                </div>
+                <div className="flex size-4 sm:size-6 items-center justify-center rounded-full bg-[#7C3AED] text-white text-[6px] sm:text-[7px] font-bold shadow-md ring-2 ring-white -ml-2">
+                  <div className="size-2.5 sm:size-4 rounded-full border border-dashed border-white" />
+                </div>
+              </div>
+
+              {/* White Circular Badge */}
+              <div className="bg-white rounded-full size-36 sm:size-52 lg:size-56 p-2.5 sm:p-4 flex flex-col items-center justify-center shadow-2xl border border-purple-100 relative text-center">
+                <p className="text-[8px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#2D1B69]">
+                  Celebrating
+                </p>
+                <div className="h-[2px] w-8 sm:w-10 bg-gradient-to-r from-purple-500 via-amber-400 to-pink-500 rounded-full my-0.5" />
+                <div className="relative my-0.5 flex items-center justify-center">
+                  <span className="text-3xl sm:text-6xl font-black tracking-tighter bg-gradient-to-r from-[#2D1B69] via-[#6D28D9] to-[#2563EB] bg-clip-text text-transparent drop-shadow-sm select-none">
+                    25
+                  </span>
+                </div>
+                <div className="text-center font-extrabold text-slate-900 tracking-wider uppercase text-[8px] sm:text-xs leading-tight">
+                  <p className="text-[#2D1B69] font-bold">Years of</p>
+                  <p className="text-slate-950 font-black tracking-widest text-[9px] sm:text-xs">COMPLIANCE</p>
+                  <p className="text-slate-900 font-extrabold tracking-widest text-[8px] sm:text-[11px]">EXCELLENCE</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
+

@@ -1,45 +1,13 @@
 'use client';
 
-import { Linkedin, Youtube, Twitter, Facebook, Phone, Mail, MapPin } from 'lucide-react';
-
-const services = [
-  'Labour Compliance',
-  'Vendor Compliance',
-  'Factory Compliance',
-  'Payroll Compliance',
-  'Audit Management',
-];
-
-const industries = [
-  'Manufacturing',
-  'Retail',
-  'Logistics',
-  'BFSI',
-  'Healthcare',
-  'Real Estate',
-  'IT & ITES',
-];
-
-const resourceLinks = [
-  'Intelligence Hub',
-  'Guides',
-  'Webinars',
-  'Whitepapers',
-  'Reports',
-];
-
-const socialLinks = [
-  { icon: Linkedin, label: 'LinkedIn' },
-  { icon: Youtube, label: 'YouTube' },
-  { icon: Twitter, label: 'Twitter' },
-  { icon: Facebook, label: 'Facebook' },
-];
-
-const footerLinks = [
-  'Privacy Policy',
-  'Terms & Conditions',
-  'Sitemap',
-];
+import { Phone, Mail, MapPin } from 'lucide-react';
+import { 
+  footerServices as services, 
+  footerIndustries as industries, 
+  footerResourceLinks as resourceLinks, 
+  footerSocialLinks as socialLinks, 
+  footerLinks 
+} from '@/data';
 
 export function Footer() {
   return (

@@ -1,191 +1,140 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Download, Play } from 'lucide-react';
-import { SectionHeading } from '@/components/shared/section-heading';
-import { ScrollReveal } from '@/components/shared/scroll-reveal';
-
-const categories = ['All', 'Guides', 'Checklists', 'Webinars', 'Whitepapers', 'Reports'] as const;
-
-type Category = (typeof categories)[number];
-
-interface Resource {
-  id: string;
-  category: Category;
-  title: string;
-  description: string;
-  badge: string;
-  date: string;
-  readTime: string;
-}
-
-const resources: Resource[] = [
-  {
-    id: '1',
-    category: 'Guides',
-    title: 'Complete Guide to Labour Law Compliance 2025',
-    description: 'Comprehensive 40-page guide covering all major labour law requirements.',
-    badge: 'PDF Guide',
-    date: 'Jan 2025',
-    readTime: '40 min read',
-  },
-  {
-    id: '2',
-    category: 'Checklists',
-    title: 'Factory Compliance Audit Checklist',
-    description: 'Step-by-step checklist for factory audit preparation and compliance verification.',
-    badge: 'Checklist',
-    date: 'Feb 2025',
-    readTime: '15 min read',
-  },
-  {
-    id: '3',
-    category: 'Webinars',
-    title: 'Navigating Labour Code Changes',
-    description: 'Expert panel discussion on the latest labour code amendments and their impact.',
-    badge: 'Webinar',
-    date: 'Mar 2025',
-    readTime: '45 min',
-  },
-  {
-    id: '4',
-    category: 'Whitepapers',
-    title: 'The State of Enterprise Compliance in India',
-    description: 'Research-backed analysis of compliance trends, challenges, and technology adoption.',
-    badge: 'Whitepaper',
-    date: 'Apr 2025',
-    readTime: '25 min read',
-  },
-  {
-    id: '5',
-    category: 'Reports',
-    title: 'Compliance Penalty Analysis Q1 2025',
-    description: 'Data-driven report on compliance penalties across Indian states and industries.',
-    badge: 'Report',
-    date: 'May 2025',
-    readTime: '20 min read',
-  },
-  {
-    id: '6',
-    category: 'Guides',
-    title: 'Vendor Compliance Management Framework',
-    description: 'Best practices framework for managing multi-vendor compliance requirements.',
-    badge: 'PDF Guide',
-    date: 'Jun 2025',
-    readTime: '30 min read',
-  },
-];
-
-const badgeColors: Record<Category, string> = {
-  Guides: 'bg-ap-purple text-white',
-  Checklists: 'bg-green-600 text-white',
-  Webinars: 'bg-ap-violet text-white',
-  Whitepapers: 'bg-ap-indigo text-white',
-  Reports: 'bg-amber-600 text-white',
-  All: 'bg-gray-100 text-gray-600',
-};
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import { resources } from '@/data';
 
 export function ResourceCenter() {
-  const [activeCategory, setActiveCategory] = useState<Category>('All');
-
-  const filteredResources = resources.filter(
-    (r) => activeCategory === 'All' || r.category === activeCategory
-  );
+  const [images, setImages] = useState<Record<string, string>>({
+    1: resources[0].image,
+    2: resources[1].image,
+    3: resources[2].image,
+    4: resources[3].image,
+  });
 
   return (
-    <section className="bg-white py-20 lg:py-28">
+    <section id="resources" className="bg-gradient-to-br from-[#F5F2FF] via-[#FAF8FF] to-[#F3EFFF] py-16 sm:py-20 lg:py-24 overflow-hidden border-b border-slate-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="Knowledge Center"
-          title="Resources for Compliance Leaders"
-          description="Guides, reports, and tools to strengthen your compliance strategy."
-        />
+        
+        {/* Section Header */}
+        <div className="mb-10 sm:mb-12">
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900"
+          >
+            Stay Informed. Stay Ahead.
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mt-2 text-sm sm:text-base text-slate-500 font-normal"
+          >
+            Latest updates on compliance, laws &amp; industry insights
+          </motion.p>
+        </div>
 
-        {/* Category Filter Tabs */}
-        <ScrollReveal delay={0.15} className="mt-10 flex flex-wrap justify-center gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${
-                activeCategory === cat
-                  ? 'bg-ap-purple text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+        {/* 5 Cards Row - Mobile Responsive Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 sm:gap-6">
+          
+          {/* 4 White Resource Article Cards */}
+          {resources.map((item, idx) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.08 }}
+              className="group flex flex-col justify-between rounded-2xl border border-purple-100/70 bg-white overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-purple-200"
             >
-              {cat}
-            </button>
-          ))}
-        </ScrollReveal>
+              <div>
+                {/* Top Image Preview Card */}
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-900">
+                  <Image
+                    src={images[item.id] || item.image}
+                    alt={item.title}
+                    fill
+                    unoptimized
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    onError={() => {
+                      setImages((prev) => ({ ...prev, [item.id]: item.fallbackImage }));
+                    }}
+                  />
+                </div>
 
-        {/* Resource Cards Grid */}
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <AnimatePresence mode="popLayout">
-            {filteredResources.map((resource, index) => (
-              <motion.div
-                key={resource.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3, delay: index * 0.08 }}
-                className="group rounded-xl border border-gray-100 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-              >
-                {/* Badge */}
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`inline-block rounded-full px-2.5 py-1 text-xs font-medium ${
-                      badgeColors[resource.category]
-                    }`}
-                  >
-                    {resource.category === 'Webinars' && (
-                      <Play className="mr-1 inline-block h-3 w-3" fill="currentColor" />
-                    )}
-                    {resource.badge}
+                {/* Overlapping Meta Bar (Date & Category Badge) */}
+                <div className="flex items-center justify-between px-4 sm:px-5 pt-4">
+                  <span className="text-[11px] font-medium text-slate-400">
+                    {item.date}
+                  </span>
+                  <span className="rounded-full bg-purple-50 px-2.5 py-0.5 text-[11px] font-bold text-[#7C3AED] border border-purple-100">
+                    {item.badge}
                   </span>
                 </div>
 
-                {/* Title */}
-                <h3 className="mt-3 text-base font-semibold text-ap-purple leading-snug">
-                  {resource.title}
-                </h3>
-
-                {/* Description */}
-                <p className="mt-2 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                  {resource.description}
-                </p>
-
-                {/* Bottom meta row */}
-                <div className="mt-4 flex items-center justify-between border-t border-gray-50 pt-4">
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span>{resource.date}</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {resource.readTime}
-                    </span>
-                  </div>
-                  <button className="inline-flex items-center gap-1 text-xs font-semibold text-ap-purple transition-colors hover:text-ap-violet">
-                    {resource.category === 'Webinars' ? 'Watch' : 'Download'}
-                    {resource.category === 'Webinars' ? (
-                      <Play className="h-3 w-3" />
-                    ) : (
-                      <Download className="h-3 w-3" />
-                    )}
-                  </button>
+                {/* Article Title */}
+                <div className="p-4 sm:p-5 pt-3">
+                  <h3 className="text-sm sm:text-base font-bold leading-snug text-slate-900 group-hover:text-[#7C3AED] transition-colors line-clamp-3">
+                    {item.title}
+                  </h3>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </div>
 
-          {/* Empty state */}
-          {filteredResources.length === 0 && (
-            <div className="col-span-full py-12 text-center text-muted-foreground">
-              No resources found for this category.
+              {/* Bottom Read More Link */}
+              <div className="px-4 sm:px-5 pb-5 pt-1">
+                <a
+                  href={item.href}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#7C3AED] transition-colors group-hover:text-[#6D28D9]"
+                >
+                  <span>Read More</span>
+                  <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
+                </a>
+              </div>
+            </motion.div>
+          ))}
+
+          {/* 5th Card: Soft Purple Explore More Insights CTA Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="rounded-2xl border border-purple-200/60 bg-gradient-to-br from-purple-100/70 via-purple-50/80 to-purple-100/50 p-5 sm:p-6 flex flex-col justify-between shadow-md relative overflow-hidden group min-h-[260px]"
+          >
+            {/* Ambient pattern accent */}
+            <div className="pointer-events-none absolute -right-8 -bottom-8 size-36 rounded-full bg-purple-300/20 blur-xl" />
+
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold leading-snug text-[#2D1B69]">
+                Explore More Insights
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-purple-900/70 leading-relaxed font-medium">
+                Blogs, articles, webinars and expert opinions.
+              </p>
             </div>
-          )}
+
+            {/* View All Resources Pill Button */}
+            <div className="mt-6">
+              <a
+                href="#all-resources"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#6D28D9] hover:bg-[#5B21B6] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>View All Resources</span>
+                <ArrowRight className="size-4" />
+              </a>
+            </div>
+          </motion.div>
+
         </div>
+
       </div>
     </section>
   );
 }
+
